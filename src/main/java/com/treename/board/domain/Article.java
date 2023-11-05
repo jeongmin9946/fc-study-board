@@ -24,9 +24,8 @@ import java.util.Set;
         @Index(columnList = "createdAt"),
         @Index(columnList = "createdBy")
 })
-@EntityListeners(AuditingEntityListener.class) // JPAConfig - Auditor를 사용 한다.
 @Entity
-public class Article {
+public class Article extends AuditingFields {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Mysql의 AutoIncrement방식.!!
@@ -45,14 +44,6 @@ public class Article {
     private final Set<ArticleComment> articleCommentSet = new LinkedHashSet<>();
 
 
-    // Meta-data
-    // JPA Auditing기능으로 데이터 자동 세팅 (생성자 및 수정자는 JpaConfig-auditorAware 토대로 처리)
-    @CreatedDate @Column(nullable = false) private LocalDateTime createdAt;             // 생성일시
-    @CreatedBy @Column(nullable = false, length = 100) private String createdBy;        // 생성자
-    @LastModifiedDate @Column(nullable = false) private LocalDateTime modifiedAt;       // 수정일시
-    @LastModifiedBy @Column(nullable = false, length = 100) private String modifiedBy;  // 수정자
-
-
     protected Article() { }
 
     private Article(String title, String content, String hashtag) {
@@ -64,6 +55,7 @@ public class Article {
     public static Article of(String title, String content, String hashtag) {
         return new Article(title, content, hashtag);
     }
+
 
     @Override
     public boolean equals(Object o) {
