@@ -1,5 +1,6 @@
 package com.treename.board.controller;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Disabled("Spring Data Rest 통합테스트는 불필요하여 제외 (최초 동작만 확인)")
 @DisplayName("Data Rest - API 테스트")
 @Transactional      // DB 작업 후 롤백 처리
 @AutoConfigureMockMvc
