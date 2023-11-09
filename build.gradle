@@ -37,8 +37,43 @@ dependencies {
 
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	// QueryDSL 설정
+	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'  	// 중요도 1, springBoot 3.0 이상은 jpa 버전 지정 및 jakarta 설정 필요.
+	implementation 'com.querydsl:querydsl-core'					// 중요도 1
+	implementation 'com.querydsl:querydsl-collections'			// 중요도 2
+	                                               // ↓↓ Gradle의 groovy 문법을 이용한 버전 자동 입력, 다른 dependency와 달리 중간에 버전이 작성되기 때문에 버전 생략이 불가하여
+												   // 아래와 같이 버전을 처리함.
+	// annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta${dependencyManagement.ImportedProperties['querydsl.version']}:jpa" 	// 중요도 1
+	// 위의 dependency는 오류 발생함....아래와 같이 해결
+	annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta" 	// 중요도 1
+
+	// 아래는 queryDSL에서 주로 발생하는 오류 대응 코드
+	annotationProcessor 'jakarta.annotation:jakarta.annotation-api'	// java.lang.NoClassDefFoundError (javax.annotation.Generated 대응 코드)
+	annotationProcessor 'jakarta.persistence:jakarta.persistence-api'	// java.lang.NoClassDefFoundError (javax.annotation.Entity 대응 코드)
+
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+// QueryDSL 설정부 (원래는 build 폴더에 들어가는데 일부로 main으로 생성되도록 함
+//                 IntelliJ에서 build 폴더에 있으면 문제가 발생할 수 있음
+//                 Gradle의 스캔범위와 InteliiJ의 스캔범위가 중복되어 중복 생성 충돌)
+def generated = 'src/main/generated'
+
+// QueryDSL QClass 파일 생성 위치를 지정
+tasks.withType(JavaCompile) {
+	options.getGeneratedSourceOutputDirectory().set(file(generated))
+}
+
+// java source set 에 QueryD?SL QClass 위치 추가
+sourceSets {
+	main.java.srcDirs += [generated]
+}
+
+// gradle clean 시 QClass 디렉토리 삭제
+clean {
+	delete file(generated)
 }
